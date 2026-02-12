@@ -60,10 +60,26 @@ Study frame transmission and retransmission process.
 Analyze efficiency differences between protocols.
 
 # 📊 Comparison Table
-Protocol	Window Size	Retransmission Method	Efficiency	Complexity
-Stop & Wait	1	One frame at a time	Low	Simple
-Go-Back-N	N	Retransmit from lost frame onward	Medium	Moderate
-Selective Repeat	N	Retransmit only lost frame	High	Complex
+Protocol: Stop & Wait ARQ
+Window Size: 1
+Acknowledgment Type: Individual ACK
+Retransmission Strategy: Retransmit the same frame if ACK is not received
+Efficiency: Low
+Complexity: Simple
+
+Protocol: Go-Back-N ARQ
+Window Size: N
+Acknowledgment Type: Cumulative ACK
+Retransmission Strategy: Retransmit lost frame and all frames after it
+Efficiency: Medium
+Complexity: Moderate
+
+Protocol: Selective Repeat ARQ
+Window Size: N
+Acknowledgment Type: Individual ACK
+Retransmission Strategy: Retransmit only the lost frame
+Efficiency: High
+Complexity: Complex
 
 # 🛠️ Applications
 
