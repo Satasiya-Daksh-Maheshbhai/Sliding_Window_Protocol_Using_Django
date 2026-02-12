@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TCP Communication Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 100%);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .protocol-badge {
+            background-color: #10b981;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .success-rate {
+            color: #10b981;
+            font-weight: 700;
+        }
+        
+        .retransmission-rate {
+            color: #ef4444;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen p-4 md:p-10">
+
+<div class="max-w-6xl mx-auto">
+    <!-- Header Section -->
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">
+            TCP Communication Simulator
+        </h1>
+        <p class="text-gray-600 max-w-2xl mx-auto">
+            Analyze network protocol performance under different packet loss scenarios with sliding window protocols
+        </p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-10">
+        <div class="p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Input Form -->
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-6 h-6 text-emerald-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Simulation Parameters
+                    </h2>
+                    
+                    <form method="POST" class="space-y-6">
+                        {% csrf_token %}
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Total Packets
+                                </label>
+                                <input type="number" name="packets" placeholder="e.g., 100" min="1" max="1000"
+                                       class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition duration-200" required>
+                                <p class="text-sm text-gray-500 mt-1">Number of packets to transmit</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Window Size
+                                </label>
+                                <input type="number" name="window" placeholder="e.g., 4" min="1" max="20"
+                                       class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition duration-200" required>
+                                <p class="text-sm text-gray-500 mt-1">Sliding window protocol window size</p>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Packet Loss Percentage
+                                </label>
+                                <div class="relative">
+                                    <input type="number" name="loss" placeholder="e.g., 20" min="0" max="100"
+                                           class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition duration-200" required>
+                                    <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">%</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-1">Simulated network packet loss rate</p>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-4 rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            <div class="flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                Run Simulation
+                            </div>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Info Panel -->
+                <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-100">
+    <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+        <svg class="w-5 h-5 text-emerald-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+            </path>
+        </svg>
+        About This Simulator
+    </h3>
+
+    <div class="space-y-4">
+        <p class="text-gray-700">
+            This simulator models <strong class="text-gray-900">reliable data communication</strong> over an 
+            unreliable network using Sliding Window Protocols. It demonstrates how transport-layer 
+            protocols like TCP ensure correct packet delivery using acknowledgments, timeouts, 
+            retransmissions, and sequence numbers.
+        </p>
+
+        <ul class="space-y-3">
+            <li class="flex items-start">
+                <div class="w-2 h-2 bg-emerald-500 rounded-full mt-2 mr-3"></div>
+                <span class="text-gray-700">
+                    <strong class="text-gray-900">Stop-and-Wait:</strong>
+                    Sends one packet at a time and waits for acknowledgment. 
+                    Simple but inefficient when delay is high.
+                </span>
+            </li>
+
+            <li class="flex items-start">
+                <div class="w-2 h-2 bg-teal-500 rounded-full mt-2 mr-3"></div>
+                <span class="text-gray-700">
+                    <strong class="text-gray-900">Go-Back-N:</strong>
+                    Uses a sliding window and retransmits the entire window if a packet is lost.
+                    Improves utilization but may waste bandwidth.
+                </span>
+            </li>
+
+            <li class="flex items-start">
+                <div class="w-2 h-2 bg-cyan-500 rounded-full mt-2 mr-3"></div>
+                <span class="text-gray-700">
+                    <strong class="text-gray-900">Selective Repeat:</strong>
+                    Retransmits only the lost packets and buffers out-of-order packets.
+                    Provides highest efficiency in lossy networks.
+                </span>
+            </li>
+        </ul>
+
+        <div class="bg-white rounded-lg p-4 border border-emerald-200">
+            <p class="text-sm text-gray-600 mb-2">
+                <strong>What This Simulator Analyzes:</strong>
+            </p>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• Transmission Delay (Tt)</li>
+                <li>• Propagation Delay (Tp)</li>
+                <li>• Round Trip Time (RTT)</li>
+                <li>• Efficiency (η)</li>
+                <li>• Throughput</li>
+                <li>• Success Rate</li>
+            </ul>
+        </div>
+
+        <div class="bg-emerald-100 rounded-lg p-4 border border-emerald-300">
+            <p class="text-sm text-emerald-800">
+                <strong>Insight:</strong>
+                As packet loss or propagation delay increases, Stop-and-Wait performance degrades significantly.
+                Sliding Window protocols maintain higher throughput by utilizing bandwidth efficiently.
+                Selective Repeat performs best under high-loss conditions.
+            </p>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+    </div>
+
+    {% if results %}
+    <!-- Results Section -->
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6">
+            <h2 class="text-2xl font-bold text-white flex items-center">
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                Simulation Results
+            </h2>
+        </div>
+        
+        <div class="p-6">
+            <!-- Stats Summary -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="stat-card rounded-xl p-5">
+                    <div class="text-sm font-medium text-gray-500 mb-1">Total Packets</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ packets }}</div>
+                </div>
+                <div class="stat-card rounded-xl p-5">
+                    <div class="text-sm font-medium text-gray-500 mb-1">Window Size</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ window }}</div>
+                </div>
+                <div class="stat-card rounded-xl p-5">
+                    <div class="text-sm font-medium text-gray-500 mb-1">Packet Loss</div>
+                    <div class="text-2xl font-bold text-red-600">{{ loss }}%</div>
+                </div>
+                <div class="stat-card rounded-xl p-5">
+                    <div class="text-sm font-medium text-gray-500 mb-1">Best Protocol</div>
+                    {% if not results %}
+                        <div class="text-center text-gray-500 py-6">
+                            No simulation run yet. Please enter parameters and click Run Simulation.
+                        </div>
+                    {% endif %}
+                    {% if results %}
+                        <div class="text-2xl font-bold text-emerald-600">
+                            {{ results.0.protocol }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Results Table -->
+            <div class="overflow-x-auto rounded-xl border border-gray-200">
+                <table class="w-full">
+                    <thead class="bg-gradient-to-r from-emerald-50 to-teal-50">
+                        <tr>
+                            <th class="text-left p-4 font-semibold text-gray-700">Protocol</th>
+                            <th class="text-left p-4 font-semibold text-gray-700">Success Rate</th>
+                            <th class="text-left p-4 font-semibold text-gray-700">Retransmissions</th>
+                            <th class="text-left p-4 font-semibold text-gray-700">Throughput</th>
+                            <th class="text-left p-4 font-semibold text-gray-700">Efficiency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in results %}
+                        <tr class="border-t border-gray-100 hover:bg-gray-50 transition duration-150">
+                            <td class="p-4">
+                                <span class="protocol-badge {% if forloop.first %}bg-emerald-600{% else %}bg-teal-600{% endif %}">
+                                    {{ r.protocol }}
+                                </span>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex items-center">
+                                    <span class="success-rate mr-2">{{ r.success }}%</span>
+                                    <div class="w-32 bg-gray-200 rounded-full h-2.5">
+                                        <div class="bg-emerald-600 h-2.5 rounded-full" style="width: {{ r.success }}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <div class="retransmission-rate">{{ r.retransmissions }}</div>
+                            </td>
+                            <td class="p-4 font-medium text-gray-900">{{ r.throughput }}</td>
+                            <td class="p-4">
+                                <div class="flex items-center">
+                                    <span class="font-bold text-emerald-700 mr-2">{{ r.efficiency }}%</span>
+                                    {% if r.efficiency|add:"0" > 70 %}
+                                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                    </svg>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Footer -->
+    <div class="text-center mt-10 text-gray-500 text-sm">
+        <p>TCP Communication Simulator • Network Protocol Analysis Tool</p>
+        <p class="mt-1">Simulates Go-Back-N and Selective Repeat sliding window protocols</p>
+    </div>
+</div>
+
+</body>
+</html>
