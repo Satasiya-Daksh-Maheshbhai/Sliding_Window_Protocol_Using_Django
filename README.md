@@ -4,72 +4,101 @@ This repository contains the implementation and simulation of Sliding Window Pro
 
 The project includes:
 
-✅ Stop & Wait ARQ
+### Stop & Wait ARQ
 
-✅ Go-Back-N ARQ
+### Go-Back-N ARQ
 
-✅ Selective Repeat ARQ
+### Selective Repeat ARQ
 
-📖 Introduction
+# 📖 Introduction
 
 Sliding Window Protocol is a technique used for flow control and error control in data communication.
 
-It allows multiple frames to be sent before receiving acknowledgments, improving efficiency compared to basic transmission methods.
+It allows multiple frames to be sent before receiving acknowledgments, which improves transmission efficiency.
 
 This project demonstrates how different ARQ (Automatic Repeat reQuest) protocols work and how they handle frame loss and retransmission.
 
-🚀 Protocols Implemented
-1️⃣ Stop & Wait ARQ
+# 🚀 Protocols Implemented
+## 1️⃣ Stop & Wait ARQ
 
 Sender sends one frame at a time.
 
 Waits for acknowledgment (ACK).
 
-If ACK is not received, frame is retransmitted.
+If ACK is not received within time, the frame is retransmitted.
 
-Simple but low efficiency.
+Simple but less efficient.
 
-2️⃣ Go-Back-N ARQ
+## 2️⃣ Go-Back-N ARQ
 
-Sender can send multiple frames within a window size.
-
-If one frame is lost, all frames after it are retransmitted.
+Sender can send multiple frames within a given window size.
 
 Uses cumulative acknowledgment.
 
+If one frame is lost, all frames after that frame are retransmitted.
+
 More efficient than Stop & Wait.
 
-3️⃣ Selective Repeat ARQ
+## 3️⃣ Selective Repeat ARQ
 
-Sender sends multiple frames.
-
-Only the lost frame is retransmitted.
+Sender sends multiple frames within window size.
 
 Receiver stores out-of-order frames.
 
-Highest efficiency among the three.
+Only the lost frame is retransmitted.
 
-🎯 Objectives
+Most efficient among the three protocols.
 
-To understand working of sliding window protocols.
+# 🎯 Objectives
 
-To compare Stop & Wait, Go-Back-N, and Selective Repeat.
+Understand the working of Sliding Window Protocol.
 
-To study retransmission mechanisms.
+Compare Stop & Wait, Go-Back-N, and Selective Repeat.
 
-To analyze protocol efficiency.
+Study frame transmission and retransmission process.
 
-📊 Comparison Table
-Protocol	Window Size	Retransmission	Efficiency	Complexity
+Analyze efficiency differences between protocols.
+
+# 📊 Comparison Table
+Protocol	Window Size	Retransmission Method	Efficiency	Complexity
 Stop & Wait	1	One frame at a time	Low	Simple
 Go-Back-N	N	Retransmit from lost frame onward	Medium	Moderate
-Selective Repeat	N	Only lost frame	High	Complex
-🛠️ Applications
+Selective Repeat	N	Retransmit only lost frame	High	Complex
 
-Reliable data transmission
+# 🛠️ Applications
 
-Network communication systems
+Reliable data transmission in networks
 
-TCP protocol understanding
+Basis of TCP communication
 
-Academic and practical learning
+Error control mechanisms
+
+Academic and practical networking projects
+
+# 💻 How to Run
+## Step 1: Clone the Repository
+git clone https://github.com/your-username/sliding-window-protocol.git
+
+## Step 2: Navigate to the Project Folder
+cd minictp
+
+## Step 3: Run the Program
+python manage.py runserver
+
+# 📚 Concepts Covered
+
+ARQ (Automatic Repeat reQuest)
+
+Flow Control
+
+Error Control
+
+Acknowledgment Handling
+
+Frame Loss Detection
+
+Sliding Window Mechanism
+
+# 🏁 Conclusion
+
+This project helps in understanding how Sliding Window Protocols ensure reliable data transmission. It clearly shows the working, retransmission strategy, and efficiency differences between Stop & Wait, Go-Back-N, and Selective Repeat protocols.
