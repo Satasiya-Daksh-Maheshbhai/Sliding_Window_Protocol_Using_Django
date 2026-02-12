@@ -77,7 +77,7 @@ Academic and practical networking projects
 
 # 💻 How to Run
 ## Step 1: Clone the Repository
-git clone https://github.com/your-username/sliding-window-protocol.git
+git clone https://github.com/Satasiya-Daksh-Maheshbhai/Sliding_Window_Protocol_Using_Django.git
 
 ## Step 2: Navigate to the Project Folder
 cd minictp
